@@ -81,7 +81,7 @@ namespace Hyena.Data.Sqlite.Tests
     internal class DbBoundType
     {
         [DatabaseColumn ("PrimaryKey", Constraints = DatabaseColumnConstraints.PrimaryKey)]
-        public int PrimaryKey;
+        public long PrimaryKey;
 
         [DatabaseColumn ("PublicIntField")]
         public int PublicIntField;

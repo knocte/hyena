@@ -262,6 +262,11 @@ namespace Hyena.Data.Sqlite
                         "Multiple primary keys in the {0} table", TableName)
                     );
                 }
+                if (!c.ValueType.IsAssignableFrom (typeof (long))) {
+                    throw new Exception (String.Format (
+                        "Primary key {0} in the {1} class must be of type 'long'", c.Name, typeof(T))
+                    );
+                }
                 key = c;
             }
         }
@@ -290,7 +295,7 @@ namespace Hyena.Data.Sqlite
         public virtual void Save (T target, bool force_insert)
         {
             try {
-                if (Convert.ToInt32 (key.GetRawValue (target)) > 0 && !force_insert) {
+                if (Convert.ToInt64 (key.GetRawValue (target)) > 0 && !force_insert) {
                     Update (target);
                 } else {
                     key.SetValue (target, Insert (target));
@@ -322,7 +327,7 @@ namespace Hyena.Data.Sqlite
             return values;
         }
 
-        protected int Insert (T target)
+        protected long Insert (T target)
         {
             return connection.Execute (InsertCommand, GetInsertParams (target));
         }
@@ -478,7 +483,7 @@ namespace Hyena.Data.Sqlite
             if (key == null || item == null)
                 return false;
 
-            int id = (int) key.GetValue (item);
+            long id = (long) key.GetValue (item);
             if (id < 1)
                 return false;
 

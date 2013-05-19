@@ -215,26 +215,26 @@ namespace Hyena.Data.Sqlite
         }
 
         // INSERT, UPDATE, DELETE queries
-        public int Execute (HyenaSqliteCommand command)
+        public long Execute (HyenaSqliteCommand command)
         {
             command.CommandType = HyenaCommandType.Execute;;
             QueueCommand(command);
-            return Convert.ToInt32 (command.WaitForResult (this));
+            return (long)command.WaitForResult (this);
         }
 
-        public int Execute (HyenaSqliteCommand command, params object [] param_values)
+        public long Execute (HyenaSqliteCommand command, params object [] param_values)
         {
             command.CommandType = HyenaCommandType.Execute;;
             QueueCommand(command, param_values);
-            return Convert.ToInt32 (command.WaitForResult (this));
+            return (long)command.WaitForResult (this);
         }
 
-        public int Execute (string command_str, params object [] param_values)
+        public long Execute (string command_str, params object [] param_values)
         {
             return Execute (new HyenaSqliteCommand (command_str, param_values) { ReaderDisposes = true });
         }
 
-        public int Execute (object command)
+        public long Execute (object command)
         {
             return Execute (new HyenaSqliteCommand (command.ToString ()) { ReaderDisposes = true });
         }
