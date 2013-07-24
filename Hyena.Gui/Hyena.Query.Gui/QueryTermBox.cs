@@ -111,7 +111,7 @@ namespace Hyena.Query.Gui
             field_chooser.Active = 0;
         }
 
-        private bool IsRowSeparator (TreeModel model, TreeIter iter)
+        private bool IsRowSeparator (ITreeModel model, TreeIter iter)
         {
             return String.IsNullOrEmpty (model.GetValue (iter, 0) as string);
         }

@@ -31,7 +31,7 @@ using Gtk;
 
 namespace Hyena.Widgets
 {
-    public class TextViewEditable : TextView, Editable
+    public class TextViewEditable : TextView, IEditable
     {
         public TextViewEditable ()
         {
@@ -79,15 +79,15 @@ namespace Hyena.Widgets
             }
         }
 
-        void Editable.PasteClipboard ()
+        void IEditable.PasteClipboard ()
         {
         }
 
-        void Editable.CutClipboard ()
+        void IEditable.CutClipboard ()
         {
         }
 
-        void Editable.CopyClipboard ()
+        void IEditable.CopyClipboard ()
         {
         }
 

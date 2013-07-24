@@ -34,7 +34,7 @@ using Atk;
 
 namespace Hyena.Gui
 {
-    public class BaseWidgetAccessible : Gtk.Accessible, Atk.ComponentImplementor
+    public class BaseWidgetAccessible : Gtk.Accessible, Atk.IComponentImplementor
     {
         private Gtk.Widget widget;
         private uint focus_id = 0;

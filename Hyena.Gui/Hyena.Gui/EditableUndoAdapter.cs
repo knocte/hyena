@@ -34,7 +34,7 @@ using Hyena;
 
 namespace Hyena.Gui
 {
-    public class EditableUndoAdapter<T> where T : Widget, Editable
+    public class EditableUndoAdapter<T> where T : Widget, IEditable
     {
         private T editable;
         private UndoManager undo_manager = new UndoManager ();

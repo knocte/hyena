@@ -405,7 +405,7 @@ namespace Hyena.Widgets
 
     }
 
-    public class RatingAccessible : Atk.Object, Atk.Value, Atk.ValueImplementor
+    public class RatingAccessible : Atk.Object, Atk.IValue, Atk.IValueImplementor
     {
         private RatingEntry rating;
 

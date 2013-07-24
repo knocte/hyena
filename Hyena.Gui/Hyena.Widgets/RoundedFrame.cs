@@ -36,7 +36,7 @@ using Hyena.Gui.Theming;
 
 namespace Hyena.Widgets
 {
-    public class RoundedFrame : Bin, Gtk.ScrollableImplementor
+    public class RoundedFrame : Bin, IScrollableImplementor
     {
         private Theme theme;
         protected Theme Theme {
