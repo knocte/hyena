@@ -132,7 +132,7 @@ namespace Hyena.Data.Gui
             }
             // treview style
             StyleContext.Save ();
-            StyleContext.AddClass ("view");
+            StyleContext.AddClass ("cell");
 
             StyleContext.RenderBackground (cr, 0, 0, Allocation.Width, Allocation.Height);
 
