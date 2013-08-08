@@ -132,9 +132,10 @@ namespace Hyena.Data.Gui
             }
             // treview style
             StyleContext.Save ();
-            StyleContext.AddClass ("cell");
 
+            StyleContext.AddClass ("view");
             StyleContext.RenderBackground (cr, 0, 0, Allocation.Width, Allocation.Height);
+            StyleContext.RemoveClass ("view");
 
             // FIXME: ViewLayout will never be null in the future but we'll need
             // to deterministically render a header somehow...
@@ -309,12 +310,13 @@ namespace Hyena.Data.Gui
                         selected_focus_alloc = single_list_alloc;
                     }
                 } else {
-                    if (rules_hint && ri % 2 != 0) {
-                        StyleContext.AddRegion ("row", RegionFlags.Odd);
-                        StyleContext.RenderBackground (cr, single_list_alloc.X, single_list_alloc.Y,
-                            single_list_alloc.Width, single_list_alloc.Height);
-                        StyleContext.RemoveRegion ("row");
+                    StyleContext.AddClass ("cell");
+                    if (rules_hint) { // TODO: check also gtk_widget_style_get(widget,"allow-rules",&allow_rules,NULL);
+                        StyleContext.AddRegion ("row", ri % 2 != 0 ? RegionFlags.Odd : RegionFlags.Even);
                     }
+                    StyleContext.RenderBackground (cr, single_list_alloc.X, single_list_alloc.Y,
+                        single_list_alloc.Width, single_list_alloc.Height);
+                    StyleContext.RemoveRegion ("row");
 
                     PaintReorderLine (cr, ri, single_list_alloc);
 
