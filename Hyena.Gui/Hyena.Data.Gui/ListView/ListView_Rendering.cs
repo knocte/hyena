@@ -317,6 +317,7 @@ namespace Hyena.Data.Gui
                     StyleContext.RenderBackground (cr, single_list_alloc.X, single_list_alloc.Y,
                         single_list_alloc.Width, single_list_alloc.Height);
                     StyleContext.RemoveRegion ("row");
+                    StyleContext.RemoveClass ("cell");
 
                     PaintReorderLine (cr, ri, single_list_alloc);
 
@@ -338,13 +339,25 @@ namespace Hyena.Data.Gui
                     }
 
                     if (selection_height > 0) {
-                        Cairo.Color selection_color = CairoExtensions.GdkRGBAToCairoColor (StyleContext.GetBackgroundColor (StateFlags.Selected));
+
+                        StyleContext.AddClass ("cell");
+                        var bg_selected_color = StyleContext.GetBackgroundColor (StateFlags.Selected);
+
+                        if (bg_selected_color.Equals (StyleContext.GetBackgroundColor (StateFlags.Normal))) {
+                            // see https://bugs.launchpad.net/bugs/1211831
+                            Hyena.Log.Warning ("Buggy CSS theme: same background-color for .cell:selected and .cell");
+                            StyleContext.RemoveClass ("cell");
+                            bg_selected_color = StyleContext.GetBackgroundColor (StateFlags.Selected);
+                            StyleContext.AddClass ("cell");
+                        }
+                        Cairo.Color selection_color = CairoExtensions.GdkRGBAToCairoColor (bg_selected_color);
 
                         if (!HasFocus || HeaderFocused)
                             selection_color = CairoExtensions.ColorShade (selection_color, 1.1);
 
                         Theme.DrawRowSelection (cr, list_rendering_alloc.X, selection_y, list_rendering_alloc.Width, selection_height,
                                                 true, true, selection_color, CairoCorners.All);
+                        StyleContext.RemoveClass ("cell");
                         selection_height = 0;
                     }
 
