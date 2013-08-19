@@ -1,10 +1,12 @@
 //
 // GtkUtilities.cs
 //
-// Author:
+// Authors:
 //   Aaron Bockover <abockover@novell.com>
+//   Andrés G. Aragoneses <knocte@gmail.com>
 //
 // Copyright 2007-2010 Novell, Inc.
+// Copyright 2013 Andrés G. Aragoneses
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -140,6 +142,14 @@ namespace Hyena.Gui
                     }
                 }
             }
+        }
+
+        internal static string Dump (this Gtk.Adjustment alig) {
+            if (alig == null) {
+                return "<null>";
+            }
+            return String.Format("Value:{0},PageSize{1},PageIncrement:{2},StepIncrement:{3},Lower:{4},Upper:{5}",
+                                 alig.Value, alig.PageSize, alig.PageIncrement, alig.StepIncrement, alig.Lower, alig.Upper);
         }
 
         [Obsolete ("Use Gtk.Global.ShowUri() from gtk# 3.x")]

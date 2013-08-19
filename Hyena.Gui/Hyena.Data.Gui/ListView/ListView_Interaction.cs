@@ -6,10 +6,12 @@
 //   Gabriel Burt <gburt@novell.com>
 //   Eitan Isaacson <eitan@ascender.com>
 //   Alex Launi <alex.launi@canonical.com>
+//   Andrés G. Aragoneses <knocte@gmail.com>
 //
 // Copyright (C) 2007-2009 Novell, Inc.
 // Copyright (C) 2009 Eitan Isaacson
 // Copyright (C) 2010 Alex Launi
+// Copyright (C) 2013 Andrés G. Aragoneses
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -1004,7 +1006,10 @@ namespace Hyena.Data.Gui
                 hadjustment.Upper = header_width;
                 hadjustment.StepIncrement = 10.0;
                 if (hadjustment.Value + hadjustment.PageSize > hadjustment.Upper) {
-                    hadjustment.Value = hadjustment.Upper - hadjustment.PageSize;
+                    hadjustment.Value = Math.Max (0, hadjustment.Upper - hadjustment.PageSize);
+                }
+                if (hadjustment.Upper > 0 && hadjustment.Upper < hadjustment.PageSize) {
+                    hadjustment.Upper = hadjustment.PageSize;
                 }
             }
 
@@ -1019,12 +1024,19 @@ namespace Hyena.Data.Gui
                 }
 
                 if (vadjustment.Value + vadjustment.PageSize > vadjustment.Upper) {
-                    vadjustment.Value = vadjustment.Upper - vadjustment.PageSize;
+                    vadjustment.Value = Math.Max (0, vadjustment.Upper - vadjustment.PageSize);
+                }
+                if (vadjustment.Upper > 0 && vadjustment.Upper < vadjustment.PageSize) {
+                    vadjustment.Upper = vadjustment.PageSize;
                 }
             } else if (vadjustment != null) {
                 // model is null
                 vadjustment.Upper = 0;
                 vadjustment.Lower = 0;
+                vadjustment.PageSize = 0;
+                vadjustment.PageIncrement = 0;
+                vadjustment.StepIncrement = 0;
+                vadjustment.Value = 0;
             }
 
             if (hadjustment != null) {

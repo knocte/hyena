@@ -126,9 +126,10 @@ namespace Hyena.Data.Gui
 
             list_rendering_alloc.X = header_rendering_alloc.X + Theme.TotalBorderWidth;
             list_rendering_alloc.Y = header_rendering_alloc.Bottom + Theme.TotalBorderWidth;
-            list_rendering_alloc.Width = allocation.Width - Theme.TotalBorderWidth * 2;
-            list_rendering_alloc.Height = allocation.Height - (list_rendering_alloc.Y - allocation.Y) -
-                Theme.TotalBorderWidth;
+            list_rendering_alloc.Width = Math.Max (0,
+                allocation.Width - Theme.TotalBorderWidth * 2);
+            list_rendering_alloc.Height = Math.Max (0,
+                allocation.Height - (list_rendering_alloc.Y - allocation.Y) - Theme.TotalBorderWidth);
 
             header_interaction_alloc = header_rendering_alloc;
             header_interaction_alloc.X = list_rendering_alloc.X;
@@ -166,6 +167,12 @@ namespace Hyena.Data.Gui
 
         protected override void OnSizeAllocated (Rectangle allocation)
         {
+            if (allocation.X < 0 || allocation.Y < 0) {
+                Log.Error ("SizeAllocate call received from container with negative coordinate(s): " + allocation.ToString () + Environment.NewLine +
+                           "(Prevent adjustments from receiving bad values; i.e.: negative values, or upper values lower than page size/increment, or any positive Value when the upper value is zero, etc.)");
+                return;
+            }
+
             base.OnSizeAllocated (allocation);
 
             if (IsRealized) {
