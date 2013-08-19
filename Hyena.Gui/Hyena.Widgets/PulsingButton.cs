@@ -82,20 +82,19 @@ namespace Hyena.Widgets
             pulsator.Pulse += delegate { QueueDraw (); };
         }
 
-        protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+        protected override bool OnDrawn (Cairo.Context cr)
         {
             if (!pulsator.IsPulsing) {
-                return base.OnExposeEvent (evnt);
+                return base.OnDrawn (cr);
             }
 
-            Cairo.Context cr = Gdk.CairoHelper.Create (GdkWindow);
-
-            double x = Allocation.X + Allocation.Width / 2;
-            double y = Allocation.Y + Allocation.Height / 2;
+            double x = Allocation.Width / 2;
+            double y = Allocation.Height / 2;
             double r = Math.Min (Allocation.Width, Allocation.Height) / 2;
             double alpha = Choreographer.Compose (pulsator.Percent, Easing.Sine);
 
-            Cairo.Color color = CairoExtensions.GdkColorToCairoColor (Style.Background (StateType.Selected));
+            Gdk.RGBA rgba = StyleContext.GetBackgroundColor (StateFlags.Selected);
+            Cairo.Color color = CairoExtensions.GdkRGBAToCairoColor (rgba);
             Cairo.RadialGradient fill = new Cairo.RadialGradient (x, y, 0, x, y, r);
             color.A = alpha;
             fill.AddColorStop (0, color);
@@ -108,8 +107,7 @@ namespace Hyena.Widgets
             cr.Fill ();
             fill.Destroy ();
 
-            CairoExtensions.DisposeContext (cr);
-            return base.OnExposeEvent (evnt);
+            return base.OnDrawn (cr);
         }
 
         public void StartPulsing ()

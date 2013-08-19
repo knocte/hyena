@@ -106,21 +106,25 @@ namespace Hyena.Widgets
 
         public SegmentedBar ()
         {
-            WidgetFlags |= WidgetFlags.NoWindow;
+            HasWindow = false;
         }
 
         protected override void OnRealized ()
         {
-            GdkWindow = Parent.GdkWindow;
+            Window = Parent.Window;
             base.OnRealized ();
         }
 
 #region Size Calculations
 
-        protected override void OnSizeRequested (ref Requisition requisition)
+        protected override void OnGetPreferredHeight (out int minimum_height, out int natural_height)
         {
-            requisition.Width = 200;
-            requisition.Height = 0;
+            minimum_height = natural_height = 0;
+        }
+
+        protected override void OnGetPreferredWidth (out int minimum_width, out int natural_width)
+        {
+            minimum_width = natural_width = 200;
         }
 
         protected override void OnSizeAllocated (Gdk.Rectangle allocation)
@@ -312,20 +316,18 @@ namespace Hyena.Widgets
 
 #region Rendering
 
-        protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+        protected override bool OnDrawn (Cairo.Context cr)
         {
-            if (evnt.Window != GdkWindow) {
-                return base.OnExposeEvent (evnt);
+            if (!CairoHelper.ShouldDrawWindow (cr, Window)) {
+                return base.OnDrawn (cr);
             }
-
-            Cairo.Context cr = Gdk.CairoHelper.Create (evnt.Window);
 
             if (reflect) {
                 CairoExtensions.PushGroup (cr);
             }
 
             cr.Operator = Operator.Over;
-            cr.Translate (Allocation.X + h_padding, Allocation.Y);
+            cr.Translate (h_padding, 0);
             cr.Rectangle (0, 0, Allocation.Width - h_padding, Math.Max (2 * bar_height,
                 bar_height + bar_label_spacing + layout_height));
             cr.Clip ();
@@ -367,14 +369,12 @@ namespace Hyena.Widgets
             }
 
             if (show_labels) {
-                cr.Translate ((reflect ? Allocation.X : -h_padding) + (Allocation.Width - layout_width) / 2,
-                     (reflect ? Allocation.Y : 0) + bar_height + bar_label_spacing);
-
+                cr.Translate ((reflect ? 0 : -h_padding) + (Allocation.Width - layout_width) / 2,
+                     bar_height + bar_label_spacing);
                 RenderLabels (cr);
             }
 
             bar.Destroy ();
-            CairoExtensions.DisposeContext (cr);
 
             return true;
         }
@@ -481,7 +481,8 @@ namespace Hyena.Widgets
             }
 
             Pango.Layout layout = null;
-            Color text_color = CairoExtensions.GdkColorToCairoColor (Style.Foreground (State));
+            Gdk.RGBA rgba = StyleContext.GetColor (StateFlags);
+            Color text_color = CairoExtensions.GdkRGBAToCairoColor (rgba);
             Color box_stroke_color = new Color (0, 0, 0, 0.6);
 
             int x = 0;
@@ -624,7 +625,8 @@ namespace Hyena.Widgets
             SetSizeRequest (350, -1);
 
             Gdk.Geometry limits = new Gdk.Geometry ();
-            limits.MinWidth = SizeRequest ().Width;
+            int nat_width;
+            GetPreferredWidth (out limits.MinWidth, out nat_width);
             limits.MaxWidth = Gdk.Screen.Default.Width;
             limits.MinHeight = -1;
             limits.MaxHeight = -1;

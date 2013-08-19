@@ -1,10 +1,12 @@
 //
 // GtkUtilities.cs
 //
-// Author:
+// Authors:
 //   Aaron Bockover <abockover@novell.com>
+//   Andrés G. Aragoneses <knocte@gmail.com>
 //
 // Copyright 2007-2010 Novell, Inc.
+// Copyright 2013 Andrés G. Aragoneses
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -88,7 +90,7 @@ namespace Hyena.Gui
             }
         }
 
-        public static Gdk.Color ColorBlend (Gdk.Color a, Gdk.Color b)
+        public static Gdk.RGBA ColorBlend (Gdk.RGBA a, Gdk.RGBA b)
         {
             // at some point, might be nice to allow any blend?
             double blend = 0.5;
@@ -99,47 +101,19 @@ namespace Hyena.Gui
 
             double blendRatio = 1.0 - blend;
 
-            int aR = a.Red >> 8;
-            int aG = a.Green >> 8;
-            int aB = a.Blue >> 8;
-
-            int bR = b.Red >> 8;
-            int bG = b.Green >> 8;
-            int bB = b.Blue >> 8;
-
-            double mR = aR + bR;
-            double mG = aG + bG;
-            double mB = aB + bB;
+            double mR = a.Red + b.Red;
+            double mG = a.Green + b.Green;
+            double mB = a.Blue + b.Blue;
 
             double blR = mR * blendRatio;
             double blG = mG * blendRatio;
             double blB = mB * blendRatio;
 
-            Gdk.Color color = new Gdk.Color ((byte)blR, (byte)blG, (byte)blB);
-            Gdk.Colormap.System.AllocColor (ref color, true, true);
+            Gdk.RGBA color = new Gdk.RGBA ();
+            color.Red = blR;
+            color.Green = blG;
+            color.Blue = blB;
             return color;
-        }
-
-        public static void AdaptGtkRcStyle (Widget adaptee, Type adapter)
-        {
-            GLib.GType type = (GLib.GType)adapter;
-            string path = String.Format ("*.{0}", type);
-            AdaptGtkRcStyle (adaptee, type, path, path);
-        }
-
-        public static void AdaptGtkRcStyle (Widget adaptee, GLib.GType adapter, string widgetPath, string classPath)
-        {
-            Style style = Gtk.Rc.GetStyleByPaths (adaptee.Settings, widgetPath, classPath, adapter);
-            if (style == null) {
-                return;
-            }
-
-            foreach (StateType state in Enum.GetValues (typeof (StateType))) {
-                adaptee.ModifyBase (state, style.Base (state));
-                adaptee.ModifyBg (state, style.Background (state));
-                adaptee.ModifyFg (state, style.Foreground (state));
-                adaptee.ModifyText (state, style.Text (state));
-            }
         }
 
         public static T StyleGetProperty<T> (Widget widget, string property, T default_value)
@@ -170,33 +144,30 @@ namespace Hyena.Gui
             }
         }
 
+        internal static string Dump (this Gtk.Adjustment alig) {
+            if (alig == null) {
+                return "<null>";
+            }
+            return String.Format("Value:{0},PageSize{1},PageIncrement:{2},StepIncrement:{3},Lower:{4},Upper:{5}",
+                                 alig.Value, alig.PageSize, alig.PageIncrement, alig.StepIncrement, alig.Lower, alig.Upper);
+        }
+
+        [Obsolete ("Use Gtk.Global.ShowUri() from gtk# 3.x")]
         public static bool ShowUri (string uri)
         {
             return ShowUri (null, uri);
         }
 
+        [Obsolete ("Use Gtk.Global.ShowUri() from gtk# 3.x")]
         public static bool ShowUri (Gdk.Screen screen, string uri)
         {
             return ShowUri (screen, uri, Gtk.Global.CurrentEventTime);
         }
 
-        [System.Runtime.InteropServices.DllImport ("libgtk-win32-2.0-0.dll")]
-        private static extern unsafe bool gtk_show_uri (IntPtr screen, IntPtr uri, uint timestamp, out IntPtr error);
-
+        [Obsolete ("Use Gtk.Global.ShowUri() from gtk# 3.x")]
         public static bool ShowUri (Gdk.Screen screen, string uri, uint timestamp)
         {
-            var native_uri = GLib.Marshaller.StringToPtrGStrdup (uri);
-            var native_error = IntPtr.Zero;
-            
-            try {
-                return gtk_show_uri (screen == null ? IntPtr.Zero : screen.Handle,
-                    native_uri, timestamp, out native_error);
-            } finally {
-                GLib.Marshaller.Free (native_uri);
-                if (native_error != IntPtr.Zero) {
-                    throw new GLib.GException (native_error);
-                }
-            }
+            return Gtk.Global.ShowUri (screen, uri, timestamp);
         }
     }
 }

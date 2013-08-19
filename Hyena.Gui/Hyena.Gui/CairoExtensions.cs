@@ -69,7 +69,7 @@ namespace Hyena.Gui
         {
             Surface surface = cr.Target.CreateSimilar (cr.Target.Content, pixbuf.Width, pixbuf.Height);
             Cairo.Context surface_cr = new Context (surface);
-            Gdk.CairoHelper.SetSourcePixbuf (surface_cr, pixbuf, 0, 0);
+            Gdk.CairoHelper.SetSourcePixbuf (surface_cr, pixbuf, 0.0, 0.0);
             surface_cr.Paint ();
             ((IDisposable)surface_cr).Dispose ();
             return surface;
@@ -95,6 +95,11 @@ namespace Hyena.Gui
                 (double)(color.Green >> 8) / 255.0,
                 (double)(color.Blue >> 8) / 255.0,
                 alpha);
+        }
+
+        public static Cairo.Color GdkRGBAToCairoColor (Gdk.RGBA rgba)
+        {
+            return new Cairo.Color (rgba.Red, rgba.Green, rgba.Blue, rgba.Alpha);
         }
 
         public static Cairo.Color RgbToColor (uint rgbColor)

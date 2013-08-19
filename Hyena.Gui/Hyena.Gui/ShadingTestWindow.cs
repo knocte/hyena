@@ -31,6 +31,7 @@ using Gtk;
 
 namespace Hyena.Gui
 {
+    [TestModule ("Shading")]
     public class ShadingTestWindow : Window
     {
         private int steps = 16;
@@ -40,10 +41,8 @@ namespace Hyena.Gui
             SetSizeRequest (512, 512);
         }
 
-        protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+        protected override bool OnDrawn (Cairo.Context cr)
         {
-            Cairo.Context cr = Gdk.CairoHelper.Create (evnt.Window);
-
             double step_width = Allocation.Width / (double)steps;
             double step_height = Allocation.Height / (double)steps;
             double h = 1.0;
@@ -54,8 +53,8 @@ namespace Hyena.Gui
                     double bg_b = (double)(i / 255.0);
                     double fg_b = 1.0 - bg_b;
 
-                    double x = Allocation.X + xi * step_width;
-                    double y = Allocation.Y + yi * step_height;
+                    double x = xi * step_width;
+                    double y = yi * step_height;
 
                     cr.Rectangle (x, y, step_width, step_height);
                     cr.Color = CairoExtensions.ColorFromHsb (h, s, bg_b);
@@ -74,7 +73,6 @@ namespace Hyena.Gui
                 }
             }
 
-            CairoExtensions.DisposeContext (cr);
             return true;
         }
 
